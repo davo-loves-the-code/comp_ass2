@@ -1,5 +1,8 @@
-# Next to do: brainstorm and implement a more efficient flooding mechanism
-# then everything should work! thus, implement djikstra's algorithm
+# Alex Davidson z3461391
+# Code for assignment 2 comp3331 s2 2016
+
+# To edit UPDATE_INTERVAL, see line 197
+# To edit ROUTE_UPDATE_INTERVAL, see line 204
 import fcntl, os
 import errno
 import sys
@@ -61,23 +64,20 @@ fcntl.fcntl(sock, fcntl.F_SETFL, os.O_NONBLOCK)
 def transmit(sock, ports, data):
 	for p in ports:
 		sock.sendto(data, ('127.0.0.1', p))
-		print 'Sending data to port ', p
+		#print 'Sending data to port ', p
 	return;
 # Define function to send data to adjacent nodes except received node
 def retransmit(sock, ports, data, addr):
 	for p in ports:
 		if addr[1] != p:
 			sock.sendto(data, ('127.0.0.1', p))
-			print 'Passing on data to port ', p
+			#print 'Passing on data to port ', p
 	return;
 
-def timeout():
-	#resend link state data
-	transmit(sock, ports, linkstate)
-	return;
 	
 #-------      DIJKSTRA FUNCTION DEFINITIONS    -------------	
 def global_dijkstra(edges, myname):
+	print '** Executing Dijkstra''s Algorithm **'
 	#print 'Edges: ',edges
 	unvisited = [ ] # Simple list of nodes
 	node_costs = [ ] # [[node, cost, previous node],[etc... 
@@ -190,6 +190,8 @@ transmit(sock, ports, linkstate)
 past_transmits = [linkstate]
 full_past_transmits = [linkstate] # not reset every transmit_time, for adding new edges
 
+print 'Trust me, the program is working...'
+
 while 1:
 	
 	toc = timer()
@@ -199,7 +201,7 @@ while 1:
 		tic = timer()
 		
 	dijkstra_toc = timer()
-	if dijkstra_toc - dijkstra_tic > 5:
+	if dijkstra_toc - dijkstra_tic > 30:
 		global_dijkstra(edges, myname)
 		dijkstra_tic = timer()
 	
@@ -235,8 +237,8 @@ while 1:
 				if past_message == msg:
 					new_message = 0
 			if new_message == 1:
-				print 'unseen message'
-				print edges
+				#print 'unseen message: ', msg
+				#print edges
 				full_past_transmits.append(msg)
 				# Append into edges list
 				line = msg.split()
